@@ -13,6 +13,7 @@ export class User {
   private departement: Departement;
   private role: Role;
   private status: number;
+  private photo: string;
 
   // Constructeur
   constructor(
@@ -26,7 +27,8 @@ export class User {
     numeroMatricule: string,
     departement: Departement,
     role: Role,
-    status: number
+    status: number,
+    photo: string
   ) {
     this.idUtilisateur = idUtilisateur;
     this.nom = nom;
@@ -39,9 +41,18 @@ export class User {
     this.departement = departement;
     this.role = role;
     this.status = status;
+    this.photo = photo;
   }
 
   // Getters et setters
+  public getPhoto(): string {
+    return this.photo;
+  }
+
+  public setPhoto(photo: string): void{
+      this.photo = photo;
+  }
+
   public getIdUtilisateur(): number {
     return this.idUtilisateur;
   }

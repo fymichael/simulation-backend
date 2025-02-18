@@ -16,13 +16,13 @@ export class Departement {
         status: number,
         code: string
     ) {
-        this.idDepartement = idDepartement;
-        this.nom = nom;
-        this.nomResponsable = nomResponsable;
-        this.contactResponsable = contactResponsable;
-        this.localisation = localisation;
-        this.status = status;
-        this.code = code;
+        this.setIdDepartement(idDepartement);
+        this.setNom(nom);
+        this.setNomResponsable(nomResponsable);
+        this.setContactResponsable(contactResponsable);
+        this.setLocalisation(localisation);
+        this.setStatus(status);
+        this.setCode(code);
     }
 
     // Getters et setters

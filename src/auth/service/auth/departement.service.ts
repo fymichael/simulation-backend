@@ -3,7 +3,7 @@ https://docs.nestjs.com/providers#services
 */
 
 import { Injectable } from '@nestjs/common';
-import { Departement } from '../model/departement.model';
+import { Departement } from 'src/auth/model/auth/departement.model';
 import { DatabaseService } from 'src/auth/service/database.service';
 
 @Injectable()
@@ -21,7 +21,7 @@ export class DepartementService {
     }
 
     async getAllDepartements() {
-        const query = 'SELECT * FROM departement where status != 0';
+        const query = 'SELECT * FROM departement where status != 0 order by id_departement asc';
         return await this.databaseService.executeQuery(query);
     }
 
@@ -36,13 +36,13 @@ export class DepartementService {
     }
 
     async updateDepartment(idDepartement: number, nom: string, nom_responsable: string, contact_responsable: string, localisation: string, code: string): Promise<void> {
-        const query = 'UPDATE departement SET nom = ?, nom_responsable = ?, contact_responsable = ?, localisation = ?, code = ? WHERE id_departement = ?';
-        await this.databaseService.executeQuery(query, [nom, nom_responsable, contact_responsable, localisation, code, idDepartement]);
+        const query = "UPDATE departement SET nom = '"+nom+"', nom_responsable = '"+nom_responsable+"', contact_responsable = '"+contact_responsable+"', localisation = '"+localisation+"', code = '"+code+"' WHERE id_departement = "+idDepartement;
+        await this.databaseService.executeQuery(query);
     }
     
     async newDepartment(nom: string, nom_responsable: string, contact_responsable: string, localisation: string, code: string): Promise<void> {
-        const query = 'INSERT into departement (nom, nom_responsable, contact_responsable, localisation, code) values (?, ?, ?, ?, ? )';
-        await this.databaseService.executeQuery(query, [nom, nom_responsable, contact_responsable, localisation, code]);
+        const query = `INSERT into departement (nom, nom_responsable, contact_responsable, localisation, code) values ('${nom}', '${nom_responsable}', '${contact_responsable}', '${localisation}', '${code}' )`;
+        await this.databaseService.executeQuery(query);
     }
 
     async deleteDepartement(idDepartement: number) {

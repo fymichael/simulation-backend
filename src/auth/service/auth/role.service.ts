@@ -3,7 +3,7 @@ https://docs.nestjs.com/providers#services
 */
 
 import { Injectable } from '@nestjs/common';
-import { Role } from '../model/role.model';
+import { Role } from '../../model/auth/role.model';
 import { DatabaseService } from 'src/auth/service/database.service';
 
 @Injectable()
