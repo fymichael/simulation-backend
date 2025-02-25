@@ -89,9 +89,10 @@ export class VehiculeService {
         return await this.databaseService.executeQuery(query);
     }
 
-    async updateVehicule(idVehicule: number, nom: string) {
-        const query = 'update Vehicule set nom = ? where id_Vehicule = ?';
-        return await this.databaseService.executeQuery(query, [nom, idVehicule]);
+    async updateVehicule(idVehicule: number, idMarque: number, model: string, idCarrosserie: number, numeroChassit: string, puissance: number, numeroMoteur: string, nombrePlace: string, idEnergie: number, plaqueImmatriculation: string, dateCirculation: Date, valeursNette: number) {
+        const query = `update vehicule set id_marque = ${idMarque}, model = '${model}', id_carrosserie = ${idCarrosserie}, numero_chassit = '${numeroChassit}', puissance = ${puissance}, numero_moteur = '${numeroMoteur}', nombre_place = ${nombrePlace}, id_energie = ${idEnergie}, plaque_immatriculation = '${plaqueImmatriculation}', date_circulation = '${dateCirculation}', valeurs_nette = ${valeursNette} where id_vehicule = ${idVehicule}`;
+        console.log(query);
+        return await this.databaseService.executeQuery(query);
     }
 
     async deleteVehicule(idVehicule: number) {

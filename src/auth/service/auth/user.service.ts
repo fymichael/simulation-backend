@@ -105,6 +105,46 @@ export class UserService {
         return this.getUser();
     }
 
+    async isAgenceGeneralEmploye(numero_matricule: string){
+        const query = `select u.*
+        from utilisateur u
+        join departement d on d.id_departement = u.id_departement
+        where u.numero_matricule = '${numero_matricule}' and d.code >= '200' `;
+        console.log(query);
+        const result = await this.databaseService.executeQuery(query);
+        if (result.length > 0) {
+            return true;  
+        } 
+        return false;
+    }
+
+    async getUserByNumeroMatricule(numeroMatricule: string) {
+        const query = `SELECT * FROM utilisateur where numero_matricule = '${numeroMatricule}'`;
+        const result = await this.databaseService.executeQuery(query);
+        
+        const roleUser = await this.roleService.getRoleById(result[0].id_role);
+        const departementUser = await this.departementService.getDepartementById(result[0].id_departement);
+        
+        const user = new User(
+            result[0].id_utilisateur,
+            result[0].nom,
+            result[0].prenom,
+            result[0].adresse,
+            result[0].contact,
+            result[0].email,
+            result[0].mdp,
+            result[0].numero_matricule,
+            departementUser,
+            roleUser,
+            result[0].status,
+            result[0].photo
+            );
+            
+            this.setUser(user);
+            
+        return this.getUser();
+    }
+
     async updateUser(idUser: number, nom: string, prenom: string, adresse: string, contact: string): Promise<void> {
         const query = 'UPDATE utilisateur SET nom = ?, prenom = ?, adresse = ?, contact = ? WHERE id_utilisateur = ?';
         await this.databaseService.executeQuery(query, [nom, prenom, adresse, contact, idUser]);

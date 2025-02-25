@@ -5,17 +5,94 @@ https://docs.nestjs.com/providers#services
 import { Injectable } from '@nestjs/common';
 import { DatabaseService } from '../database.service';
 import { Statistique } from 'src/auth/model/statistiqueModel/statistique.model';
+import { SuiviPaiement } from 'src/auth/model/statistiqueModel/suiviPaiement.model';
+import { CommissionEmploye } from 'src/auth/model/statistiqueModel/commissionEmploye.model';
+import { UserService } from '../auth/user.service';
 
 @Injectable()
 export class StatistiqueService {
 
     constructor(
         private readonly databaseService: DatabaseService,
-    ){}
+        private readonly userService: UserService
+    ) { }
     formatNombre(number) {
         return number?.toLocaleString("fr-FR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
-    
+
+    async getDataCommissionAgence() {
+        const query1 = `select  
+        coalesce(sum(rc.valeurs), 0) as montant_commission
+    from report_commission rc
+    left join utilisateur u on u.id_utilisateur = rc.id_utilisateur
+    left join departement d on d.id_departement = u.id_departement
+    where d.code >= '100'
+    group by d.code`
+
+        const resultat1 = await this.databaseService.executeQuery(query1);
+        let dataCommissions = []
+        for (let i = 0; i < resultat1.length; i++) {
+            dataCommissions.push(Math.round(resultat1[i]?.montant_commission));
+        }
+        return dataCommissions
+    }
+
+    async getXAxisLabel() {
+        const query1 = `select  
+        d.code
+    from report_commission rc
+    left join utilisateur u on u.id_utilisateur = rc.id_utilisateur
+    left join departement d on d.id_departement = u.id_departement
+    where d.code >= '100'
+    group by d.code;`
+
+        const resultat1 = await this.databaseService.executeQuery(query1);
+        let xAxis = []
+        for (let i = 0; i < resultat1.length; i++) {
+            xAxis.push(resultat1[i]?.code);
+        }
+        return xAxis;
+    }
+
+    async employeAffaire() {
+        const query1 = `select u.id_utilisateur, count(rc.*) as valeurs
+        from report_commission rc
+        join utilisateur u on u.id_utilisateur = rc.id_utilisateur
+        group by u.id_utilisateur
+        order by count(rc.*) desc limit 1`;
+        const resultat1 = await this.databaseService.executeQuery(query1);
+        const user = await this.userService.getUserById(resultat1[0]?.id_utilisateur);
+        return new CommissionEmploye(user, resultat1[0]?.valeurs);
+    }
+
+    async employeCommission() {
+        const query1 = `select u.id_utilisateur, sum(rc.valeurs) as valeurs
+        from report_commission rc
+        join utilisateur u on u.id_utilisateur = rc.id_utilisateur
+        group by u.id_utilisateur
+        order by sum(rc.valeurs) desc limit 1`;
+        const resultat1 = await this.databaseService.executeQuery(query1);
+        const user = await this.userService.getUserById(resultat1[0]?.id_utilisateur);
+        return new CommissionEmploye(user, resultat1[0]?.valeurs);
+    }
+
+    async suiviPaiement(annee) {
+        const query = `select * from v_suivi_paiement where extract(year from date) = '${annee}'`;
+        const resultat = await this.databaseService.executeQuery(query);
+        let suiviPaiements = []
+        for (let i = 0; i < resultat.length; i++) {
+            const suivi = new SuiviPaiement(resultat[i].numero_police, resultat[i].montant, resultat[i].date, resultat[i].status);
+            suiviPaiements.push(suivi);
+        }
+        const query1 = `select * from v_recouvrement where extract(year from date) = '${annee}'`;
+        const resultat1 = await this.databaseService.executeQuery(query1);
+        for (let i = 0; i < resultat1.length; i++) {
+            const suivi = new SuiviPaiement(resultat1[i].numero_police, resultat1[i].montant, resultat1[i].date, resultat1[i].status);
+            suiviPaiements.push(suivi);
+        }
+        return suiviPaiements;
+    }
+
     async contratRepartition(annee) {
         const hashMap = new Map<string, Array<any>>();
         let contrat_actifs = []
@@ -23,18 +100,18 @@ export class StatistiqueService {
 
         const query1 = `select mois, total_contrat from v_repartition_contrat_actifs where extract (year from date_debut) = ${annee} or date_debut is null`;
         const resultat1 = await this.databaseService.executeQuery(query1);
-        
+
         for (let i = 0; i < resultat1.length; i++) {
-            contrat_actifs.push(resultat1[i]?.total_contrat);            
+            contrat_actifs.push(resultat1[i]?.total_contrat);
         }
 
         const query2 = `select mois, total_contrat from v_repartition_contrat_resilier where extract (year from date_debut) = ${annee} or date_debut is null`;
         const resultat2 = await this.databaseService.executeQuery(query2);
-        
+
         for (let i = 0; i < resultat2.length; i++) {
-            contrat_resilier.push(resultat2[i]?.total_contrat);            
+            contrat_resilier.push(resultat2[i]?.total_contrat);
         }
-        
+
         const query3 = `select count(*) as nombre_contrat_actifs from contrat where status = 5 and extract (year from date_debut) = 2025`
         const resultat3 = await this.databaseService.executeQuery(query3);
 
@@ -44,7 +121,7 @@ export class StatistiqueService {
         hashMap.set('repartition_contrat_actifs', contrat_actifs);
         hashMap.set('repartition_contrat_resilier', contrat_resilier);
         hashMap.set('nombre_contrat_actifs', [resultat3[0]?.nombre_contrat_actifs ?? 0]);
-        hashMap.set('nombre_contrat_resilier', [resultat4[0]?.nombre_contrat_resilier ?? 0]);        
+        hashMap.set('nombre_contrat_resilier', [resultat4[0]?.nombre_contrat_resilier ?? 0]);
 
         return hashMap;
     }
@@ -109,7 +186,7 @@ export class StatistiqueService {
         const resultat1 = await this.databaseService.executeQuery(query1);
 
         for (let i = 0; i < resultat1.length; i++) {
-            dataArrieres.push(this.formatNombre(resultat1[i]?.montant));
+            dataArrieres.push(resultat1[i]?.montant);
         }
         return dataArrieres;
     }
@@ -122,7 +199,7 @@ export class StatistiqueService {
         const resultat2 = await this.databaseService.executeQuery(query2);
 
         for (let i = 0; i < resultat2.length; i++) {
-            dataEncaissements.push(this.formatNombre(resultat2[i]?.montant));
+            dataEncaissements.push(resultat2[i]?.montant);
         }
         return dataEncaissements;
     }

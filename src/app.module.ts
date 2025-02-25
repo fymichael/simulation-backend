@@ -34,10 +34,12 @@ import { MarqueService } from './auth/service/vehicule/marque.service';
 import { CarrosserieService } from './auth/service/vehicule/carrosserie.service';
 import { EnergieService } from './auth/service/vehicule/energie.service';
 import { VehiculeController } from './auth/controller/contrats/vehicule.controller';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
     AuthModule,
+    ScheduleModule.forRoot()
   ],
   controllers: [
     DemandeClientController,

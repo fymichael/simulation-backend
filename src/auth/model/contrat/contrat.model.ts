@@ -1,6 +1,7 @@
 import { User } from "../auth/user.model";
 import { Client } from "../client/client.model";
 import { Vehicule } from "../vehicule/vehicule.model";
+import { AvenantContrat } from "./avenantContrat.model";
 import { Classification } from "./classification.model";
 import { Exoneration } from "./exoneration.model";
 import { Garantie } from "./garantie.model";
@@ -25,6 +26,10 @@ export class Contrat {
     private procedurePaiement: Array<ProcedurePaiement>;
     private renouvellement: Array<Date>;
     private typePaiement: TypePaiement;
+    private avenants: Array<AvenantContrat>;
+    private codeApporteur: string;
+    private numeroAttestation: Array<string>;
+    private numeroContrat: string;
 
     
     constructor(
@@ -44,7 +49,12 @@ export class Contrat {
         garanties: Array<Garantie>,
         procedures: Array<ProcedurePaiement>,
         renouvellement: Array<Date>,
-        typePaiement: TypePaiement
+        typePaiement: TypePaiement,
+        avenants: Array<AvenantContrat>,
+        codeApporteur: string,
+        numeroAttestation: Array<string>,
+        numeroContrat: string
+
     ) {
         this.id_contrat = id_contrat;
         this.numeroPolice = numeroPolice;
@@ -63,8 +73,43 @@ export class Contrat {
         this.procedurePaiement = procedures;
         this.renouvellement = renouvellement;
         this.typePaiement = typePaiement;
-        
+        this.avenants = avenants;
+        this.codeApporteur = codeApporteur;
+        this.numeroAttestation = numeroAttestation;
+        this.numeroContrat = numeroContrat;
     }
+
+    public getNumeroContrat(): string{
+        return this.numeroContrat;
+    }
+
+    public setNumeroContrat(numeroContrat: string){
+        this.numeroContrat = numeroContrat;
+    }
+
+    public getNumeroAttestation(): Array<string>{
+        return this.numeroAttestation;
+    }
+
+    public setNumeroAttestation(numeroAttestation: Array<string>){
+        this.numeroAttestation = numeroAttestation;
+    }
+
+    public getCodeApporteur(): string{
+        return this.codeApporteur;
+    }
+
+    public setCodeApporteur(codeApporteur: string) {
+        this.codeApporteur = codeApporteur;
+    }
+
+    public getAvenants(): Array<AvenantContrat> {
+        return this.avenants;
+    }
+
+    public setAvenants(avenants: Array<AvenantContrat>): void {
+        this.avenants = avenants;
+    }    
 
     public getTypePaiement(): TypePaiement {
         return this.typePaiement;

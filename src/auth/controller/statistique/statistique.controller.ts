@@ -36,6 +36,19 @@ export class StatistiqueController {
         // for last row
         const resultat8 = await this.statistiqueService.contratRepartition(annee);
 
+        // for suivi paiement
+        const resultat9 = await this.statistiqueService.suiviPaiement(annee);
+
+        // emp avec le plus de commission obtenus
+        const resultat10 = await this.statistiqueService.employeCommission();
+
+        // emp avec le plus d'affaires nouvelles déposées
+        const resultat11 = await this.statistiqueService.employeAffaire();
+
+        // chart des commissions par agences
+        const resultat12 = await this.statistiqueService.getXAxisLabel();
+        const resultat13 = await this.statistiqueService.getDataCommissionAgence();
+
         return {
             montant_encaissement: resultat1.get('montant_encaissement'),
             montant_arriere: resultat1.get('montant_arriere'),
@@ -58,6 +71,11 @@ export class StatistiqueController {
             repartition_contrat_resilier: resultat8.get('repartition_contrat_resilier'),
             nombre_contrat_actifs: resultat8.get('nombre_contrat_actifs'),
             nombre_contrat_resilier: resultat8.get('nombre_contrat_resilier'),
+            suivi_paiement: resultat9,
+            employe_commission: resultat10,
+            employe_affaire: resultat11,
+            xAxisLabel: resultat12,
+            data_agence_commission: resultat13
         };
     }
 }

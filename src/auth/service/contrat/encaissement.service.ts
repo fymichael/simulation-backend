@@ -26,7 +26,7 @@ export class EncaissementService {
     async newEncaissement(idProcedurePaimement: number, date_encaissement: Date, montant: number, numero_pieces) {
         const query1 = `update procedure_paiement set status = 5 where id_procedure_paiement = ${idProcedurePaimement}`;
         await this.databaseService.executeQuery(query1);
-        const query = `insert into encaissement values (default, ${idProcedurePaimement}, '${date_encaissement}', ${montant}, 5, ${numero_pieces})`
+        const query = `insert into encaissement values (default, ${idProcedurePaimement}, '${date_encaissement}', ${montant}, 5, '${numero_pieces}')`
         await this.databaseService.executeQuery(query);
     }
 

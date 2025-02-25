@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, UseGuards } from "@nestjs/common";
 import { Role } from "../../annotations/Role.decorator";
 import { RolesGuard } from "../../annotations/RolesGuard";
 import { VehiculeService } from "src/auth/service/vehicule/vehicule.service";
@@ -52,5 +52,11 @@ export class VehiculeController {
   @Post('vehicule')
   newVehicule(@Body() vehiculeDto: Record<string, any>) {
     return this.VehiculeService.newVehicule(vehiculeDto.id_marque, vehiculeDto.model, vehiculeDto.id_carrosserie, vehiculeDto.numero_chassit, vehiculeDto.puissance, vehiculeDto.numero_moteur, vehiculeDto.nombre_place, vehiculeDto.id_energie, vehiculeDto.plaque_immatriculation, vehiculeDto.date_circulation, vehiculeDto.valeur_nette);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Put('vehicule/:idVehicule')
+  updateVehicule(@Body() vehiculeDto: Record<string, any>, @Param('idVehicule') idVehicule: number) {
+    return this.VehiculeService.updateVehicule(idVehicule, vehiculeDto.id_marque, vehiculeDto.model, vehiculeDto.id_carrosserie, vehiculeDto.numero_chassit, vehiculeDto.puissance, vehiculeDto.numero_moteur, vehiculeDto.nombre_place, vehiculeDto.id_energie, vehiculeDto.plaque_immatriculation, vehiculeDto.date_circulation, vehiculeDto.valeur_nette);
   }
 }

@@ -31,7 +31,7 @@ export class GarantieService {
     }
 
     async getContratGaranties(idContrat: number) {
-        const query = 'SELECT * FROM garantie_contrat where id_contrat = '+idContrat;
+        const query = 'SELECT DISTINCT id_garantie FROM garantie_contrat where id_contrat = '+idContrat;
         const result = await this.databaseService.executeQuery(query);
         let garanties = [];
         for (let i = 0; i < result.length; i++) {

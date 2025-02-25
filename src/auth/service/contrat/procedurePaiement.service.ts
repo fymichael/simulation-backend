@@ -31,7 +31,7 @@ export class ProcedurePaiementService {
     }
 
     async getContratProcedurePaiement(idContrat: number){
-        const query = 'SELECT * FROM Procedure_Paiement where id_contrat = '+idContrat;
+        const query = 'SELECT * FROM Procedure_Paiement where id_contrat = '+idContrat+' and status != 0';
         return await this.databaseService.executeQuery(query);
     }
     
